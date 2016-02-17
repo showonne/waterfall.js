@@ -10,18 +10,15 @@
 
         var _options = $.extend({}, default_options, options)
 
+        var isRendering = false
 
-        var _init = function(){
+        function _init(){
 
             containerWidth = $container.width()
 
-            console.log('container\'s width is', containerWidth)
-
             var children = $('.grid')
 
-            var gridWidth = children.eq(0).width() + parseInt(children.eq(0).css('margin-left'))
-                             + parseInt(children.eq(0).css('margin-right')) + parseInt(children.eq(0).css('padding-left'))
-                             + parseInt(children.eq(0).css('padding-right'))
+            var gridWidth = children.eq(0).outerWidth(true)
             
             var columns = Math.floor( containerWidth / gridWidth )
             
@@ -29,13 +26,9 @@
 
             var offsetArray = []
 
-            console.log(columns)
-
             children.each(function(index, item){
 
-                var _height = children.eq(index).height() + parseInt(children.eq(index).css('margin-top'))
-                             + parseInt(children.eq(index).css('margin-bottom')) + parseInt(children.eq(index).css('padding-top'))
-                             + parseInt(children.eq(index).css('padding-bottom'))
+                var _height = children.eq(index).outerHeight(true)
 
                 if(index < columns){
                     $(item).css({
@@ -48,7 +41,6 @@
 
                     var minHeight = Math.min.apply(Math, offsetArray),
                         minIndex = $.inArray(minHeight, offsetArray)
-                    console.log(minIndex)
                     $(item).css({
                         'position': 'absolute',
                         'top': minHeight,
@@ -58,14 +50,21 @@
                     offsetArray[minIndex] += _height
 
                 }
-                console.log(offsetArray)
+
             })
         }
 
         _init()
 
+        var timer
+
         $(window).resize(function(){
-            _init()
+            if(timer){
+                clearTimeout(timer)
+            }
+            timer = setTimeout(function(){
+                _init()
+            }, 300)
         })
 
     }
