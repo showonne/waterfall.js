@@ -1,30 +1,29 @@
 ;(function($, window, document, undefined){
 
-    var default_options = {
+    var defaults = {
 
     }
 
     $.fn.WaterFall = function(options){
 
-        var $container = this
+        var $container = this,
+            children = $('.grid')
 
-        var _options = $.extend({}, default_options, options)
-
-        var isRendering = false
+        var _options = $.extend({}, defaults, options)
 
         function _init(){
 
-            containerWidth = $container.width()
+            console.log('init@')
 
-            var children = $('.grid')
-
-            var gridWidth = children.eq(0).outerWidth(true)
-            
-            var columns = Math.floor( containerWidth / gridWidth )
+            var containerWidth = $container.width(),
+                gridWidth = children.eq(0).outerWidth(true),
+                columns = Math.floor( containerWidth / gridWidth )
             
             var leftSpace = containerWidth - gridWidth * columns
 
-            var offsetArray = []
+            var offsetArray = [], leftArray = []
+
+            console.log('containerWidth is:', containerWidth, ', gridWidth is :', gridWidth, 'columns is :', columns)
 
             children.each(function(index, item){
 
@@ -36,15 +35,19 @@
                         'left': index * gridWidth + leftSpace / 2,
                         'top': children.eq(0).css('margin-top')
                     })
+
                     offsetArray[index] = _height
+                    leftArray[index] = index * gridWidth + leftSpace / 2
+
                 }else{
 
                     var minHeight = Math.min.apply(Math, offsetArray),
                         minIndex = $.inArray(minHeight, offsetArray)
+
                     $(item).css({
                         'position': 'absolute',
                         'top': minHeight,
-                        'left': children.eq(minIndex).position().left
+                        'left': leftArray[minIndex]
                     })
 
                     offsetArray[minIndex] += _height
