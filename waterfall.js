@@ -33,7 +33,7 @@
             
             var leftSpace = containerWidth - gridWidth * columns
 
-            var offsetArray = [], leftArray = []
+            var offsetArray = [], leftArray = [], minHeight, minIndex
 
             children.each(function(index, item){
 
@@ -52,14 +52,13 @@
                         })
                     }
                 
-
                     offsetArray[index] = _height
                     leftArray[index] = index * gridWidth + leftSpace / 2
 
                 }else{
 
-                    var minHeight = Math.min.apply(Math, offsetArray),
-                        minIndex = $.inArray(minHeight, offsetArray)
+                    minHeight = Math.min.apply(Math, offsetArray),
+                    minIndex = $.inArray(minHeight, offsetArray)
 
                     if(_options.animate.open){
                         $(item).animate({
@@ -78,10 +77,14 @@
                 }
 
             })
+
+            $container.css('height', offsetArray[minIndex])
+
         }
 
         _init()
         _layout()
+
 
         var timer
 
