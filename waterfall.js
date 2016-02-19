@@ -1,10 +1,18 @@
 ;(function($, window, document, undefined){
 
     var defaults = {
-
+        animate: {
+            open: false,
+            type: 'ease',
+            duration: 500
+        }
     }
 
     $.fn.WaterFall = function(options){
+
+        if(Object.prototype.toString.call(options) !== "[object Object]"){
+            throw new Error('options should be a object.')
+        }
 
         var $container = this,
             children = $('.grid')
@@ -12,8 +20,12 @@
         var _options = $.extend({}, defaults, options)
 
         function _init(){
+            children.each(function(index, item){
+                $(item).css('position', 'absolute')
+            })
+        }
 
-            console.log('init@')
+        function _layout(){
 
             var containerWidth = $container.width(),
                 gridWidth = children.eq(0).outerWidth(true),
@@ -23,18 +35,23 @@
 
             var offsetArray = [], leftArray = []
 
-            console.log('containerWidth is:', containerWidth, ', gridWidth is :', gridWidth, 'columns is :', columns)
-
             children.each(function(index, item){
 
                 var _height = children.eq(index).outerHeight(true)
 
                 if(index < columns){
-                    $(item).css({
-                        'position': 'absolute',
-                        'left': index * gridWidth + leftSpace / 2,
-                        'top': children.eq(0).css('margin-top')
-                    })
+                    if(_options.animate.open){
+                        $(item).animate({
+                            'left': index * gridWidth + leftSpace / 2,
+                            'top': children.eq(0).css('margin-top')
+                        }, options.animate.duration)
+                    }else{
+                        $(item).css({
+                            'left': index * gridWidth + leftSpace / 2,
+                            'top': children.eq(0).css('margin-top')
+                        })
+                    }
+                
 
                     offsetArray[index] = _height
                     leftArray[index] = index * gridWidth + leftSpace / 2
@@ -44,11 +61,17 @@
                     var minHeight = Math.min.apply(Math, offsetArray),
                         minIndex = $.inArray(minHeight, offsetArray)
 
-                    $(item).css({
-                        'position': 'absolute',
-                        'top': minHeight,
-                        'left': leftArray[minIndex]
-                    })
+                    if(_options.animate.open){
+                        $(item).animate({
+                            'top': minHeight,
+                            'left': leftArray[minIndex]
+                        }, options.animate.duration)
+                    }else{
+                        $(item).css({
+                            'top': minHeight,
+                            'left': leftArray[minIndex]
+                        })
+                    }
 
                     offsetArray[minIndex] += _height
 
@@ -58,6 +81,7 @@
         }
 
         _init()
+        _layout()
 
         var timer
 
@@ -66,7 +90,7 @@
                 clearTimeout(timer)
             }
             timer = setTimeout(function(){
-                _init()
+                _layout()
             }, 300)
         })
 
